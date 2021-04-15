@@ -1,19 +1,31 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
+import { Artist } from './entities/artist.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ArtistRepository } from './artist.repository';
 
 @Injectable()
 export class ArtistsService {
-  create(createArtistDto: CreateArtistDto) {
-    return 'This action adds a new artist';
+  constructor(
+    @InjectRepository(Artist) private artistRepository: ArtistRepository,
+  ) {}
+
+  create(createArtistDto: CreateArtistDto): Promise<Artist> {
+    const artist = this.artistRepository.create(createArtistDto);
+    return this.artistRepository.save(artist);
   }
 
   findAll() {
     return `This action returns all artists`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} artist`;
+  async findOne(id: number): Promise<Artist> {
+    const artist = await this.artistRepository.findOne(id);
+    if (!artist) {
+      throw new NotFoundException(`No artist found with id: ${id}`);
+    }
+    return artist;
   }
 
   update(id: number, updateArtistDto: UpdateArtistDto) {
