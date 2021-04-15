@@ -16,7 +16,7 @@ export class Album {
   @Column()
   title: string;
 
-  @Column('year')
+  @Column({ width: 4 })
   year: number;
 
   @Column()
