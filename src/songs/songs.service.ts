@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSongDto } from './dto/create-song.dto';
 import { UpdateSongDto } from './dto/update-song.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -23,19 +23,31 @@ export class SongsService {
     return this.songRepository.save(song);
   }
 
-  findAll() {
-    return `This action returns all songs`;
+  findAll(): Promise<Song[]> {
+    return this.songRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} song`;
+  async findOne(id: number): Promise<Song> {
+    const song = this.songRepository.findOne(id);
+    if (!song) {
+      throw new NotFoundException(`No song found with id: ${id}`);
+    }
+    return song;
   }
 
-  update(id: number, updateSongDto: UpdateSongDto) {
-    return `This action updates a #${id} song`;
+  async update(updateSongDto: UpdateSongDto): Promise<Song> {
+    const { albumId } = updateSongDto;
+    await this.findOne(updateSongDto.id);
+    const album = await this.albumsService.findOne(albumId);
+    const partialSong = await this.songRepository.preload({
+      ...updateSongDto,
+      album,
+    });
+    return this.songRepository.save(partialSong);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} song`;
+  async remove(id: number): Promise<Song> {
+    const album = await this.findOne(id);
+    return this.songRepository.remove(album);
   }
 }
