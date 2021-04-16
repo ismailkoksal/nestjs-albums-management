@@ -22,7 +22,7 @@ export class Album {
   @Column()
   cover: string;
 
-  @ManyToOne(() => Artist, (artist) => artist.albums)
+  @ManyToOne(() => Artist, (artist) => artist.albums, { onDelete: 'CASCADE' })
   artist: Artist;
 
   @OneToMany(() => Song, (song) => song.album)

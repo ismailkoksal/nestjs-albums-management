@@ -16,8 +16,8 @@ export class ArtistsService {
     return this.artistRepository.save(artist);
   }
 
-  findAll() {
-    return `This action returns all artists`;
+  findAll(): Promise<Artist[]> {
+    return this.artistRepository.find();
   }
 
   async findOne(id: number): Promise<Artist> {
@@ -28,11 +28,14 @@ export class ArtistsService {
     return artist;
   }
 
-  update(id: number, updateArtistDto: UpdateArtistDto) {
-    return `This action updates a #${id} artist`;
+  async update(updateArtistDto: UpdateArtistDto): Promise<Artist> {
+    await this.findOne(updateArtistDto.id);
+    const partialArtist = await this.artistRepository.preload(updateArtistDto);
+    return this.artistRepository.save(partialArtist);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} artist`;
+  async remove(id: number): Promise<Artist> {
+    const artist = await this.findOne(id);
+    return this.artistRepository.remove(artist);
   }
 }
