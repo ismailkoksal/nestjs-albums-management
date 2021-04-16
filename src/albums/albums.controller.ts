@@ -11,6 +11,7 @@ import { AlbumsService } from './albums.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
+import { FindOneParams } from '../shared/dto/find-one-params.dto';
 
 @Controller('albums')
 export class AlbumsController {
@@ -22,22 +23,22 @@ export class AlbumsController {
   }
 
   @Get()
-  findAll() {
+  findAll(): Promise<Album[]> {
     return this.albumsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<Album> {
-    return this.albumsService.findOne(+id);
+  findOne(@Param() params: FindOneParams): Promise<Album> {
+    return this.albumsService.findOne(params.id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAlbumDto: UpdateAlbumDto) {
-    return this.albumsService.update(+id, updateAlbumDto);
+  @Patch()
+  update(@Body() updateAlbumDto: UpdateAlbumDto): Promise<Album> {
+    return this.albumsService.update(updateAlbumDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.albumsService.remove(+id);
+  remove(@Param() params: FindOneParams): Promise<Album> {
+    return this.albumsService.remove(params.id);
   }
 }

@@ -23,8 +23,8 @@ export class AlbumsService {
     return this.albumRepository.save(album);
   }
 
-  findAll() {
-    return `This action returns all albums`;
+  findAll(): Promise<Album[]> {
+    return this.albumRepository.find();
   }
 
   findOne(id: number): Promise<Album> {
@@ -35,11 +35,19 @@ export class AlbumsService {
     return album;
   }
 
-  update(id: number, updateAlbumDto: UpdateAlbumDto) {
-    return `This action updates a #${id} album`;
+  async update(updateAlbumDto: UpdateAlbumDto): Promise<Album> {
+    const { artistId } = updateAlbumDto;
+    await this.findOne(updateAlbumDto.id);
+    const artist = await this.artistsService.findOne(artistId);
+    const partialAlbum = await this.albumRepository.preload({
+      ...updateAlbumDto,
+      artist,
+    });
+    return this.albumRepository.save(partialAlbum);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} album`;
+  async remove(id: number): Promise<Album> {
+    const album = await this.findOne(id);
+    return this.albumRepository.remove(album);
   }
 }
