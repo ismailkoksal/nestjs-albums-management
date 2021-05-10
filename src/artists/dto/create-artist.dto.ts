@@ -1,5 +1,5 @@
 import { IsBoolean, IsNotEmpty } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 
 export class CreateArtistDto {
   @IsNotEmpty()
@@ -7,6 +7,6 @@ export class CreateArtistDto {
 
   @IsNotEmpty()
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(({ value }) => value === 'true')
   isBand: boolean;
 }

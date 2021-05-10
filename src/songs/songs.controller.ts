@@ -1,11 +1,11 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
 } from '@nestjs/common';
 import { SongsService } from './songs.service';
 import { CreateSongDto } from './dto/create-song.dto';
@@ -25,6 +25,11 @@ export class SongsController {
   @Get()
   findAll(): Promise<Song[]> {
     return this.songsService.findAll();
+  }
+
+  @Get('album/:id')
+  findAllFromAlbum(@Param() params: FindOneParams): Promise<Song[]> {
+    return this.songsService.findAllFromAlbum(params.id);
   }
 
   @Get(':id')

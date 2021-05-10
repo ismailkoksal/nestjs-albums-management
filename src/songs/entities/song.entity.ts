@@ -12,6 +12,9 @@ export class Song {
   @Column()
   duration: string;
 
-  @ManyToOne(() => Album, (album) => album.songs)
+  @ManyToOne(() => Album, (album) => album.songs, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   album: Album;
 }

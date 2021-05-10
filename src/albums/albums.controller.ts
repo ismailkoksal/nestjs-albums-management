@@ -27,6 +27,11 @@ export class AlbumsController {
     return this.albumsService.findAll();
   }
 
+  @Get('artist/:id')
+  findArtistAll(@Param() params: FindOneParams): Promise<Album[]> {
+    return this.albumsService.findArtistAll(params.id);
+  }
+
   @Get(':id')
   findOne(@Param() params: FindOneParams): Promise<Album> {
     return this.albumsService.findOne(params.id);

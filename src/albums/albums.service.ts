@@ -27,8 +27,12 @@ export class AlbumsService {
     return this.albumRepository.find();
   }
 
-  findOne(id: number): Promise<Album> {
-    const album = this.albumRepository.findOne(id);
+  findArtistAll(artistId: number): Promise<Album[]> {
+    return this.albumRepository.find({ where: { artist: { id: artistId } } });
+  }
+
+  async findOne(id: number): Promise<Album> {
+    const album = await this.albumRepository.findOne(id);
     if (!album) {
       throw new NotFoundException(`No album found with id: ${id}`);
     }
@@ -36,13 +40,8 @@ export class AlbumsService {
   }
 
   async update(updateAlbumDto: UpdateAlbumDto): Promise<Album> {
-    const { artistId } = updateAlbumDto;
     await this.findOne(updateAlbumDto.id);
-    const artist = await this.artistsService.findOne(artistId);
-    const partialAlbum = await this.albumRepository.preload({
-      ...updateAlbumDto,
-      artist,
-    });
+    const partialAlbum = await this.albumRepository.preload(updateAlbumDto);
     return this.albumRepository.save(partialAlbum);
   }
 
